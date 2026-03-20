@@ -1,0 +1,22 @@
+# Fixed Core
+numpy==1.26.4
+pydantic>=2.0,<2.12
+typer>=0.17
+
+# Visualization & Analysis (Downgraded for compatibility)
+
+matplotlib
+seaborn
+pandas
+
+# Machine Learning & AI (The "Limiters")
+
+gensim<4.4.0
+scikit-learn
+joblib
+
+# UI & Utils
+streamlit
+python-dotenv
+pyyaml
+yfinance
