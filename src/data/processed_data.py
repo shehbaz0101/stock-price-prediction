@@ -23,6 +23,11 @@ class DataPreprocessor:
 
             # Sort by date
             df = df.sort_values(by='Date')
+            
+            #creating columns with exact date and year
+            df['year'] = df['Date'].dt.year
+            df['month'] = df['Date'].dt.month
+            df['day'] = df['Date'].dt.day
 
             # Drop missing values
             df = df.dropna()
