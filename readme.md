@@ -1,4 +1,4 @@
-# 🚀 AI-Powered Stock Price Prediction Platform
+   # 🚀 AI-Powered Stock Price Prediction Platform
 
 > **Production-Grade Quant + AI System for Intelligent Stock Analysis & Decision Making**
 
