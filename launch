@@ -1,0 +1,250 @@
+param(
+    [switch]$Stop,
+    [switch]$Status
+)
+
+$ErrorActionPreference = "Stop"
+$Root    = Split-Path -Parent $MyInvocation.MyCommand.Path
+$LogDir  = Join-Path $Root "logs"
+$PidFile = Join-Path $Root ".service_pids.json"
+
+# Absolute path to stockenv python - confirmed present in project
+$PythonExe = Join-Path $Root "stockenv\Scripts\python.exe"
+
+function Write-Ok   { param($msg) Write-Host "  [OK]  $msg" -ForegroundColor Green }
+function Write-Err  { param($msg) Write-Host "  [ERR] $msg" -ForegroundColor Red   }
+function Write-Info { param($msg) Write-Host "  [..]  $msg" -ForegroundColor Cyan  }
+function Write-Hdr  { param($msg) Write-Host "`n$msg"       -ForegroundColor Yellow }
+
+function Get-SavedPids {
+    if (Test-Path $PidFile) { return Get-Content $PidFile | ConvertFrom-Json }
+    return @{}
+}
+function Save-Pids {
+    param($procIds)
+    $procIds | ConvertTo-Json | Set-Content $PidFile
+}
+function Kill-Port {
+    param($port)
+    try {
+        Get-NetTCPConnection -LocalPort $port -ErrorAction SilentlyContinue | ForEach-Object {
+            $p = $_.OwningProcess
+            if ($p -gt 0) {
+                Stop-Process -Id $p -Force -ErrorAction SilentlyContinue
+                Write-Info "Freed port $port (PID $p)"
+            }
+        }
+    } catch {}
+}
+
+# ---- Stop ----------------------------------------------------------------
+if ($Stop) {
+    Write-Hdr "Stopping services..."
+    $saved = Get-SavedPids
+    foreach ($svc in @("gateway","ingestion","inference","llm_insight")) {
+        $procId = $saved.$svc
+        if ($procId) {
+            try {
+                Stop-Process -Id $procId -Force -ErrorAction SilentlyContinue
+                Write-Ok "$svc (PID $procId) stopped"
+            } catch {
+                Write-Info "$svc already gone"
+            }
+        }
+    }
+    foreach ($port in @(8000,8001,8002,8003)) { Kill-Port $port }
+    Remove-Item $PidFile -ErrorAction SilentlyContinue
+    Write-Host ""
+    exit 0
+}
+
+# ---- Status --------------------------------------------------------------
+if ($Status) {
+    Write-Hdr "Service Status"
+    $saved = Get-SavedPids
+    foreach ($svc in @("gateway","ingestion","inference","llm_insight")) {
+        $procId = $saved.$svc
+        if ($procId -and (Get-Process -Id $procId -ErrorAction SilentlyContinue)) {
+            Write-Ok "$svc  PID=$procId  RUNNING"
+        } else {
+            Write-Err "$svc  NOT RUNNING"
+        }
+    }
+    Write-Hdr "Health Checks"
+    foreach ($pair in @(@(8000,"gateway"),@(8001,"ingestion"),@(8002,"inference"),@(8003,"llm"))) {
+        $port = $pair[0]; $name = $pair[1]
+        try {
+            $r = Invoke-RestMethod "http://localhost:$port/health" -TimeoutSec 3
+            Write-Ok "$name :$port  $($r.status)"
+        } catch {
+            Write-Err "$name :$port  unreachable"
+        }
+    }
+    exit 0
+}
+
+# ---- Banner --------------------------------------------------------------
+Write-Host ""
+Write-Host "  =====================================================" -ForegroundColor Cyan
+Write-Host "       Stock Platform - Microservices Launcher"          -ForegroundColor Cyan
+Write-Host "  =====================================================" -ForegroundColor Cyan
+Write-Host ""
+
+# ---- Validate Python -----------------------------------------------------
+if (-not (Test-Path $PythonExe)) {
+    Write-Err "stockenv not found at: $PythonExe"
+    Write-Info "Make sure stockenv is inside the stock_platform folder"
+    exit 1
+}
+Write-Ok "Python: $PythonExe"
+Write-Ok "Version: $(& $PythonExe --version 2>&1)"
+
+# ---- Log dir -------------------------------------------------------------
+if (-not (Test-Path $LogDir)) { New-Item -ItemType Directory $LogDir | Out-Null }
+
+# ---- Load .env -----------------------------------------------------------
+$EnvFile = Join-Path $Root ".env"
+if (Test-Path $EnvFile) {
+    foreach ($line in Get-Content $EnvFile) {
+        if ($line -match "^\s*([^#=]+)=(.*)$") {
+            [System.Environment]::SetEnvironmentVariable(
+                $Matches[1].Trim(), $Matches[2].Trim(), "Process")
+        }
+    }
+}
+
+# ---- XAI API Key ---------------------------------------------------------
+$xaiKey = [System.Environment]::GetEnvironmentVariable("XAI_API_KEY","Process")
+if (-not $xaiKey -or $xaiKey -eq "") {
+    Write-Host ""
+    Write-Host "  Enter your xAI Grok API key (press Enter to skip):" -ForegroundColor Yellow
+    $inputKey = Read-Host "  XAI_API_KEY"
+    if ($inputKey -and $inputKey.Trim() -ne "") {
+        $cleanKey = $inputKey.Trim()
+        [System.Environment]::SetEnvironmentVariable("XAI_API_KEY", $cleanKey, "Process")
+        $envLines = Get-Content $EnvFile | Where-Object { $_ -notmatch "^XAI_API_KEY" }
+        $envLines += "XAI_API_KEY=$cleanKey"
+        $envLines | Set-Content $EnvFile
+        Write-Ok "XAI_API_KEY saved"
+    } else {
+        Write-Info "Skipping - rule-based fallback will be used"
+    }
+}
+
+# ---- Redis ---------------------------------------------------------------
+Write-Hdr "Checking Redis..."
+$redisPong = ""
+try { $redisPong = & redis-cli ping 2>&1 } catch {}
+if ($redisPong -eq "PONG") {
+    Write-Ok "Redis already running"
+} else {
+    $redisExe = Get-Command "redis-server" -ErrorAction SilentlyContinue
+    if ($redisExe) {
+        Start-Process -FilePath $redisExe.Source -WindowStyle Hidden
+        Start-Sleep 2
+        Write-Ok "Redis started"
+    } else {
+        Write-Info "Redis not found - services will use fakeredis (in-memory)"
+        [System.Environment]::SetEnvironmentVariable("USE_FAKE_REDIS","1","Process")
+    }
+}
+
+# ---- Kill any processes holding our ports --------------------------------
+Write-Hdr "Clearing ports 8000-8003..."
+foreach ($port in @(8000,8001,8002,8003)) { Kill-Port $port }
+Start-Sleep 2
+
+# ---- PYTHONPATH ----------------------------------------------------------
+$env:PYTHONPATH = $Root
+
+# ---- Start services ------------------------------------------------------
+Write-Hdr "Starting services..."
+
+$services = @(
+    [PSCustomObject]@{ Name="ingestion";   Script="run_ingestion.py";   Port=8001 }
+    [PSCustomObject]@{ Name="inference";   Script="run_inference.py";   Port=8002 }
+    [PSCustomObject]@{ Name="llm_insight"; Script="run_llm_insight.py"; Port=8003 }
+    [PSCustomObject]@{ Name="gateway";     Script="run_gateway.py";     Port=8000 }
+)
+
+$procIds = @{}
+
+foreach ($svc in $services) {
+    $scriptPath = Join-Path $Root $svc.Script
+    $logOut     = Join-Path $LogDir "$($svc.Name).log"
+    $logErr     = Join-Path $LogDir "$($svc.Name).err.log"
+
+    # Clear old logs
+    "" | Set-Content $logOut
+    "" | Set-Content $logErr
+
+    Write-Info "Starting $($svc.Name) on port $($svc.Port)..."
+
+    # KEY FIX: -NoNewWindow is required when using -RedirectStandardOutput
+    # -WindowStyle Hidden + -RedirectStandardOutput = silent crash on Windows
+    $proc = Start-Process `
+        -FilePath         $PythonExe `
+        -ArgumentList     $scriptPath `
+        -WorkingDirectory $Root `
+        -NoNewWindow `
+        -RedirectStandardOutput $logOut `
+        -RedirectStandardError  $logErr `
+        -PassThru
+
+    $procIds[$svc.Name] = $proc.Id
+    Write-Ok "$($svc.Name) launched  PID=$($proc.Id)"
+    Start-Sleep 4
+}
+
+Save-Pids $procIds
+
+# ---- Wait for health checks ----------------------------------------------
+Write-Hdr "Waiting for services..."
+$allUp = $true
+
+foreach ($svc in $services) {
+    $up = $false
+    Write-Info "Checking $($svc.Name) on :$($svc.Port) ..."
+    for ($i = 0; $i -lt 30; $i++) {
+        try {
+            $null = Invoke-RestMethod "http://localhost:$($svc.Port)/health" -TimeoutSec 3
+            $up = $true
+            break
+        } catch {
+            Start-Sleep 2
+        }
+    }
+    if ($up) {
+        Write-Ok "$($svc.Name)  http://localhost:$($svc.Port)  UP"
+    } else {
+        Write-Err "$($svc.Name)  FAILED - check logs\$($svc.Name).log"
+        Write-Info "Last log lines:"
+        Get-Content (Join-Path $LogDir "$($svc.Name).err.log") -ErrorAction SilentlyContinue |
+            Select-Object -Last 5 | ForEach-Object { Write-Host "    $_" -ForegroundColor DarkRed }
+        $allUp = $false
+    }
+}
+
+# ---- Summary -------------------------------------------------------------
+Write-Host ""
+if ($allUp) {
+    Write-Host "  =====================================================" -ForegroundColor Green
+    Write-Host "          All services are running!"                      -ForegroundColor Green
+    Write-Host ""
+    Write-Host "   Gateway   http://localhost:8000"                       -ForegroundColor Green
+    Write-Host "   Docs      http://localhost:8000/docs"                  -ForegroundColor Green
+    Write-Host "   Dashboard open dashboard.html in browser"              -ForegroundColor Green
+    Write-Host ""
+    Write-Host "   Stop:    .\launch.ps1 -Stop"                          -ForegroundColor Green
+    Write-Host "   Status:  .\launch.ps1 -Status"                        -ForegroundColor Green
+    Write-Host "  =====================================================" -ForegroundColor Green
+} else {
+    Write-Host "  Some services failed - check logs\ folder" -ForegroundColor Red
+}
+
+$dashPath = Join-Path $Root "dashboard.html"
+if ((Test-Path $dashPath) -and $allUp) {
+    Start-Sleep 2
+    Write-Info "Opening dashboard..."
+    Start-Process $dashPath
+}

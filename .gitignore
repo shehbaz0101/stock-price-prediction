@@ -1,6 +1,95 @@
-spenv/
-stockenv/
-venv/
+# ── Python ────────────────────────────────────────────────────────────
 __pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+.installed.cfg
+MANIFEST
+
+# ── Virtual environments ──────────────────────────────────────────────
+.venv/
+venv/
+env/
+stockenv/
+.env.local
+
+# ── Environment / secrets ─────────────────────────────────────────────
 .env
-*.pyc
+.env.*
+!.env.example
+*.key
+*.pem
+secrets.yaml
+secrets.json
+
+# ── Logs ──────────────────────────────────────────────────────────────
+logs/
+*.log
+*.err.log
+
+# ── Service state ─────────────────────────────────────────────────────
+.service_pids.json
+
+# ── Data files ────────────────────────────────────────────────────────
+data/raw/*.csv
+data/raw/*.parquet
+data/processed/*.csv
+data/processed/*.parquet
+*.parquet
+*.pkl
+*.joblib
+*.h5
+*.hdf5
+
+# ── MLflow ────────────────────────────────────────────────────────────
+mlruns/
+mlartifacts/
+
+# ── Models ────────────────────────────────────────────────────────────
+models/saved_models/*.pkl
+models/saved_models/*.joblib
+models/saved_models/*.bin
+!models/saved_models/.gitkeep
+
+# ── Testing ───────────────────────────────────────────────────────────
+.pytest_cache/
+.hypothesis/
+htmlcov/
+.coverage
+coverage.xml
+*.cover
+
+# ── Jupyter ───────────────────────────────────────────────────────────
+.ipynb_checkpoints/
+*.ipynb
+
+# ── IDE / editors ─────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.suo
+*.user
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# ── Windows ───────────────────────────────────────────────────────────
+desktop.ini
+$RECYCLE.BIN/
+
+# ── Redis ─────────────────────────────────────────────────────────────
+dump.rdb
+*.rdb
+
+# ── Temporary ─────────────────────────────────────────────────────────
+tmp/
+temp/
+*.tmp
+*.temp
+.cache/

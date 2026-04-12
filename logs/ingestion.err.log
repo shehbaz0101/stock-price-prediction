@@ -1,0 +1,71 @@
+INFO:     Started server process [25996]
+INFO:     Waiting for application startup.
+2026-04-12 22:17:32,966  INFO      ingestion  Seeding initial features for all tickers...
+2026-04-12 22:17:36,159  INFO      services.feature_engineering.feature_store  Connected to Redis at redis://localhost:6379/0
+2026-04-12 22:17:36,161  INFO      services.feature_engineering.feature_store  Feature vector stored  ticker=HDFCBANK.NS
+2026-04-12 22:17:36,161  INFO      ingestion  Features stored  HDFCBANK.NS      close=1620.80  rsi_14=76.3
+2026-04-12 22:17:36,526  INFO      services.feature_engineering.feature_store  Feature vector stored  ticker=RELIANCE.NS
+2026-04-12 22:17:36,529  INFO      ingestion  Features stored  RELIANCE.NS      close=2542.51  rsi_14=18.8
+2026-04-12 22:17:37,221  INFO      services.feature_engineering.feature_store  Feature vector stored  ticker=TCS.NS
+2026-04-12 22:17:37,221  INFO      ingestion  Features stored  TCS.NS           close=3837.08  rsi_14=52.1
+2026-04-12 22:17:37,624  INFO      services.feature_engineering.feature_store  Feature vector stored  ticker=INFY.NS
+2026-04-12 22:17:37,624  INFO      ingestion  Features stored  INFY.NS          close=1612.71  rsi_14=33.6
+2026-04-12 22:17:37,624  INFO      ingestion  Ingestion service ready on port 8001  features_stored=4
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
+2026-04-12 22:18:38,655  INFO      services.feature_engineering.feature_store  Feature vector stored  ticker=HDFCBANK.NS
+2026-04-12 22:18:38,655  INFO      ingestion  Features stored  HDFCBANK.NS      close=1620.80  rsi_14=76.3
+2026-04-12 22:18:39,501  INFO      services.feature_engineering.feature_store  Feature vector stored  ticker=RELIANCE.NS
+2026-04-12 22:18:39,501  INFO      ingestion  Features stored  RELIANCE.NS      close=2542.51  rsi_14=18.8
+2026-04-12 22:18:40,097  INFO      services.feature_engineering.feature_store  Feature vector stored  ticker=TCS.NS
+2026-04-12 22:18:40,097  INFO      ingestion  Features stored  TCS.NS           close=3837.08  rsi_14=52.1
+2026-04-12 22:18:40,782  INFO      services.feature_engineering.feature_store  Feature vector stored  ticker=INFY.NS
+2026-04-12 22:18:40,782  INFO      ingestion  Features stored  INFY.NS          close=1612.71  rsi_14=33.6
+2026-04-12 22:19:41,616  INFO      services.feature_engineering.feature_store  Feature vector stored  ticker=HDFCBANK.NS
+2026-04-12 22:19:41,616  INFO      ingestion  Features stored  HDFCBANK.NS      close=1620.80  rsi_14=76.3
+2026-04-12 22:19:41,986  INFO      services.feature_engineering.feature_store  Feature vector stored  ticker=RELIANCE.NS
+2026-04-12 22:19:41,986  INFO      ingestion  Features stored  RELIANCE.NS      close=2542.51  rsi_14=18.8
+2026-04-12 22:19:42,352  INFO      services.feature_engineering.feature_store  Feature vector stored  ticker=TCS.NS
+2026-04-12 22:19:42,352  INFO      ingestion  Features stored  TCS.NS           close=3837.08  rsi_14=52.1
+2026-04-12 22:19:43,100  INFO      services.feature_engineering.feature_store  Feature vector stored  ticker=INFY.NS
+2026-04-12 22:19:43,101  INFO      ingestion  Features stored  INFY.NS          close=1612.71  rsi_14=33.6
+2026-04-12 22:20:43,829  INFO      services.feature_engineering.feature_store  Feature vector stored  ticker=HDFCBANK.NS
+2026-04-12 22:20:43,829  INFO      ingestion  Features stored  HDFCBANK.NS      close=1620.80  rsi_14=76.3
+2026-04-12 22:20:44,403  INFO      services.feature_engineering.feature_store  Feature vector stored  ticker=RELIANCE.NS
+2026-04-12 22:20:44,403  INFO      ingestion  Features stored  RELIANCE.NS      close=2542.51  rsi_14=18.8
+2026-04-12 22:20:44,985  INFO      services.feature_engineering.feature_store  Feature vector stored  ticker=TCS.NS
+2026-04-12 22:20:44,985  INFO      ingestion  Features stored  TCS.NS           close=3837.08  rsi_14=52.1
+2026-04-12 22:20:45,645  INFO      services.feature_engineering.feature_store  Feature vector stored  ticker=INFY.NS
+2026-04-12 22:20:45,645  INFO      ingestion  Features stored  INFY.NS          close=1612.71  rsi_14=33.6
+2026-04-12 22:21:46,574  INFO      services.feature_engineering.feature_store  Feature vector stored  ticker=HDFCBANK.NS
+2026-04-12 22:21:46,576  INFO      ingestion  Features stored  HDFCBANK.NS      close=1620.80  rsi_14=76.3
+2026-04-12 22:21:47,552  INFO      services.feature_engineering.feature_store  Feature vector stored  ticker=RELIANCE.NS
+2026-04-12 22:21:47,552  INFO      ingestion  Features stored  RELIANCE.NS      close=2542.51  rsi_14=18.8
+2026-04-12 22:21:48,163  INFO      services.feature_engineering.feature_store  Feature vector stored  ticker=TCS.NS
+2026-04-12 22:21:48,164  INFO      ingestion  Features stored  TCS.NS           close=3837.08  rsi_14=52.1
+2026-04-12 22:21:48,781  INFO      services.feature_engineering.feature_store  Feature vector stored  ticker=INFY.NS
+2026-04-12 22:21:48,781  INFO      ingestion  Features stored  INFY.NS          close=1612.71  rsi_14=33.6
+2026-04-12 22:22:49,794  INFO      services.feature_engineering.feature_store  Feature vector stored  ticker=HDFCBANK.NS
+2026-04-12 22:22:49,794  INFO      ingestion  Features stored  HDFCBANK.NS      close=1620.80  rsi_14=76.3
+2026-04-12 22:22:50,412  INFO      services.feature_engineering.feature_store  Feature vector stored  ticker=RELIANCE.NS
+2026-04-12 22:22:50,412  INFO      ingestion  Features stored  RELIANCE.NS      close=2542.51  rsi_14=18.8
+2026-04-12 22:22:50,987  INFO      services.feature_engineering.feature_store  Feature vector stored  ticker=TCS.NS
+2026-04-12 22:22:50,987  INFO      ingestion  Features stored  TCS.NS           close=3837.08  rsi_14=52.1
+2026-04-12 22:22:51,565  INFO      services.feature_engineering.feature_store  Feature vector stored  ticker=INFY.NS
+2026-04-12 22:22:51,565  INFO      ingestion  Features stored  INFY.NS          close=1612.71  rsi_14=33.6
+2026-04-12 22:23:52,635  INFO      services.feature_engineering.feature_store  Feature vector stored  ticker=HDFCBANK.NS
+2026-04-12 22:23:52,635  INFO      ingestion  Features stored  HDFCBANK.NS      close=1620.80  rsi_14=76.3
+2026-04-12 22:23:53,364  INFO      services.feature_engineering.feature_store  Feature vector stored  ticker=RELIANCE.NS
+2026-04-12 22:23:53,364  INFO      ingestion  Features stored  RELIANCE.NS      close=2542.51  rsi_14=18.8
+2026-04-12 22:23:54,181  INFO      services.feature_engineering.feature_store  Feature vector stored  ticker=TCS.NS
+2026-04-12 22:23:54,181  INFO      ingestion  Features stored  TCS.NS           close=3837.08  rsi_14=52.1
+2026-04-12 22:23:55,917  INFO      services.feature_engineering.feature_store  Feature vector stored  ticker=INFY.NS
+2026-04-12 22:23:55,917  INFO      ingestion  Features stored  INFY.NS          close=1612.71  rsi_14=33.6
+2026-04-12 22:24:56,926  INFO      services.feature_engineering.feature_store  Feature vector stored  ticker=HDFCBANK.NS
+2026-04-12 22:24:56,926  INFO      ingestion  Features stored  HDFCBANK.NS      close=1620.80  rsi_14=76.3
+2026-04-12 22:24:57,713  INFO      services.feature_engineering.feature_store  Feature vector stored  ticker=RELIANCE.NS
+2026-04-12 22:24:57,713  INFO      ingestion  Features stored  RELIANCE.NS      close=2542.51  rsi_14=18.8
+2026-04-12 22:24:58,728  INFO      services.feature_engineering.feature_store  Feature vector stored  ticker=TCS.NS
+2026-04-12 22:24:58,729  INFO      ingestion  Features stored  TCS.NS           close=3837.08  rsi_14=52.1
+2026-04-12 22:24:59,263  INFO      services.feature_engineering.feature_store  Feature vector stored  ticker=INFY.NS
+2026-04-12 22:24:59,263  INFO      ingestion  Features stored  INFY.NS          close=1612.71  rsi_14=33.6

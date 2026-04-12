@@ -1,0 +1,7 @@
+INFO:     Started server process [30088]
+INFO:     Waiting for application startup.
+2026-04-12 22:17:41,711  INFO      inference  Model trained  features=16  samples=500
+2026-04-12 22:17:41,713  INFO      inference  Inference service ready on port 8002
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8002 (Press CTRL+C to quit)
+2026-04-12 22:18:06,145  INFO      services.feature_engineering.feature_store  Connected to Redis at redis://localhost:6379/0

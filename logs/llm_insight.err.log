@@ -1,0 +1,8 @@
+INFO:     Started server process [27824]
+INFO:     Waiting for application startup.
+2026-04-12 22:17:43,833  INFO      llm_insight  LLM service ready with Grok API  model=grok-3-mini
+2026-04-12 22:17:43,834  INFO      llm_insight  LLM insight service ready on port 8003
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8003 (Press CTRL+C to quit)
+2026-04-12 22:22:32,035  INFO      httpx  HTTP Request: POST https://api.x.ai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-04-12 22:22:32,037  ERROR     llm_insight  Grok API error  ticker=HDFCBANK.NS  err=Error code: 400 - {'code': 'Client specified an invalid argument', 'error': 'Incorrect API key provided: gs***yN. You can obtain an API key from https://console.x.ai.'}
