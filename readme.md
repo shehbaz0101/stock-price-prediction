@@ -4,7 +4,7 @@
 
 ---
 
-## 🧠 Overview
+## 🧠 Overview of the project
 
 This project is a **startup-level, end-to-end AI platform** designed to analyze financial markets using:
 
